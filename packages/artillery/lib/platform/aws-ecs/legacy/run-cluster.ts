@@ -363,9 +363,9 @@ async function tryRunCluster(
       process.exit(1);
     }
 
-    // Allow specifying 16 vCPU as either "16" or "16384". The actual value is
+    // Allow specifying 32 vCPU as either "32" or "32768". The actual value is
     // validated later.
-    const MAX_VCPUS = 16;
+    const MAX_VCPUS = 32;
     if (n <= MAX_VCPUS) {
       options.launchConfig.cpu = n * 1024;
     } else {
@@ -380,7 +380,7 @@ async function tryRunCluster(
       process.exit(1);
     }
 
-    const MAX_MEMORY_IN_GB = 120;
+    const MAX_MEMORY_IN_GB = 244;
     if (n <= MAX_MEMORY_IN_GB) {
       options.launchConfig.memory = String(parseInt(options.memory, 10) * 1024);
     } else {
@@ -907,7 +907,7 @@ async function cleanupResources(context: RunClusterContext) {
   }
 }
 
-function checkFargateResourceConfig(cpu: number, memory: number) {
+export function checkFargateResourceConfig(cpu: number, memory: number) {
   function generateListOfOptionsMiB(
     minGB: number,
     maxGB: number,
@@ -929,7 +929,8 @@ function checkFargateResourceConfig(cpu: number, memory: number) {
     2048: generateListOfOptionsMiB(4, 16, 1),
     4096: generateListOfOptionsMiB(8, 30, 1),
     8192: generateListOfOptionsMiB(16, 60, 4),
-    16384: generateListOfOptionsMiB(32, 120, 8)
+    16384: generateListOfOptionsMiB(32, 120, 8),
+    32768: [61440, 122880, 249856]
   };
 
   if (!FARGATE_VALID_CONFIGS[cpu]) {
