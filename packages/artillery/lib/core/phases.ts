@@ -91,6 +91,18 @@ function phaser(phaseSpecs: PhaseSpec[]): PhaserEmitter {
       spec.mode = spec.mode || 'uniform';
     }
 
+    if (
+      !isUndefined(spec.arrivalRate) &&
+      isUndefined(spec.rampTo) &&
+      !['uniform', 'poisson'].includes(spec.mode as string)
+    ) {
+      throw new Error(
+        `Unknown phase mode "${spec.mode}" in phase spec: ${JSON.stringify(
+          spec
+        )}. Valid modes are "uniform" and "poisson".`
+      );
+    }
+
     if (!isUndefined(spec.pause)) {
       return createPause(spec, ee);
     }
@@ -114,8 +126,11 @@ function phaser(phaseSpecs: PhaseSpec[]): PhaserEmitter {
       return createArrivalRate(spec, ee);
     }
 
-    console.log('Unknown phase spec\n%j\nThis should not happen', spec);
-    return undefined;
+    throw new Error(
+      `Unknown phase spec: ${JSON.stringify(
+        spec
+      )}. A phase must define pause, arrivalCount, or arrivalRate.`
+    );
   });
 
   ee.run = () => {

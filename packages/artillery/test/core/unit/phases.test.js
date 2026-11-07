@@ -176,6 +176,43 @@ test('ramp with string inputs', async (t) => {
   });
 });
 
+test('throws when phase mode is unknown (issue #3757)', async (t) => {
+  const phaseSpec = { duration: 10, arrivalRate: 5, mode: 'foobar' };
+
+  let phaserError;
+  try {
+    createPhaser([phaseSpec]);
+  } catch (error) {
+    phaserError = error;
+  }
+
+  assert.ok(phaserError, 'should throw');
+  assert.match(phaserError.message, /Unknown phase mode "foobar"/);
+});
+
+test('throws on unknown phase spec (issue #3757)', async (t) => {
+  const phaseSpec = { duration: 10 };
+
+  let phaserError;
+  try {
+    createPhaser([phaseSpec]);
+  } catch (error) {
+    phaserError = error;
+  }
+
+  assert.ok(phaserError, 'should throw');
+  assert.match(phaserError.message, /Unknown phase spec/);
+});
+
+test('accepts valid uniform and poisson modes', async (t) => {
+  assert.doesNotThrow(() =>
+    createPhaser([{ duration: 1, arrivalRate: 5, mode: 'uniform' }])
+  );
+  assert.doesNotThrow(() =>
+    createPhaser([{ duration: 1, arrivalRate: 5, mode: 'poisson' }])
+  );
+});
+
 function testRamp(t, phaseSpec) {
   const { promise, resolve, reject } = Promise.withResolvers();
   const phaser = createPhaser([phaseSpec]);
