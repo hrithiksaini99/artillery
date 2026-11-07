@@ -1,0 +1,27 @@
+{
+  "$schema": "https://artillery.io/schema.json",
+  "config": {
+    "target": "http://127.0.0.1",
+    "engines": {
+      "zzmissing": true
+    },
+    "phases": [
+      {
+        "duration": 1,
+        "arrivalCount": 1
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "engine": "zzmissing",
+      "flow": [
+        {
+          "get": {
+            "url": "/"
+          }
+        }
+      ]
+    }
+  ]
+}

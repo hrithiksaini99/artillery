@@ -408,8 +408,10 @@ function runScenario(
         const name = scenarioSpec.engine || script.config.engine || 'http';
         // NOTE: pre-existing behavior: throws when an engine failed to
         // load (undefined entry in the engines list).
+        // Skip engines that failed to load (undefined entries) so the
+        // unknown-engine error below is reachable instead of a TypeError.
         const engine = runState.engines.find(
-          (e) => (e as EngineInstance).__name === name
+          (e) => e && (e as EngineInstance).__name === name
         );
 
         if (typeof engine === 'undefined') {
@@ -660,7 +662,11 @@ async function handleScriptHook(
     const name = script[hook].engine || 'http';
     // NOTE: pre-existing behavior: throws when an engine failed to
     // load (undefined entry in the engines list).
-    const engine = engines.find((e) => (e as EngineInstance).__name === name);
+    // Skip engines that failed to load (undefined entries) so the
+    // unknown-engine error below is reachable instead of a TypeError.
+    const engine = engines.find(
+      (e) => e && (e as EngineInstance).__name === name
+    );
 
     if (typeof engine === 'undefined') {
       throw new Error(
